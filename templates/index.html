@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>DotCome CRM</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<aside id="sidebar">
+  <h1>DotCome CRM <a href="/logout" class="logout" title="יציאה">⏻</a></h1>
+  <div id="me-pill" class="me-pill">מחובר כ-<span id="me-name">…</span></div>
+  <input id="search" placeholder="חיפוש שם / טלפון / כתובת...">
+  <select id="city-filter"><option value="">כל הערים</option></select>
+  <select id="category-filter"><option value="">כל הקטגוריות</option></select>
+  <h3>משתמש</h3>
+  <ul id="owner-list">
+    <li data-owner="" class="active">הכל <span class="cnt" id="ocnt-"></span></li>
+  </ul>
+  <h3>סטטוס</h3>
+  <ul id="status-list">
+    <li data-status="" class="active">הכל <span class="cnt" id="cnt-"></span></li>
+    {% for key, label in statuses %}
+    <li data-status="{{ key }}">{{ label }} <span class="cnt" id="cnt-{{ key }}"></span></li>
+    {% endfor %}
+  </ul>
+</aside>
+
+<main>
+  <header>
+    <div class="view-switch">
+      <button class="view-btn active" data-view="list">📋 רשימה</button>
+      <button class="view-btn" data-view="kanban">📊 קנבן (פעילים)</button>
+    </div>
+    <span id="result-count"></span>
+    <span class="spacer"></span>
+    <button id="new-lead" class="btn primary">+ ליד חדש</button>
+    <button id="reload">↻ רענן</button>
+  </header>
+  <div id="sort-bar">
+    <span class="sort-label">מיון:</span>
+    <div id="sort-rules"></div>
+    <button id="sort-add" class="btn-mini">+ הוסף מיון</button>
+    <button id="sort-reset" class="btn-mini">איפוס</button>
+  </div>
+  <div id="lead-list"></div>
+  <div id="kanban" class="hidden">
+    {% for key, label in active_statuses %}
+    <div class="kcol" data-status="{{ key }}">
+      <div class="kcol-head">
+        <span class="status {{ key }}">{{ label }}</span>
+        <span class="kcol-count" id="kcnt-{{ key }}">0</span>
+      </div>
+      <div class="kcol-body" data-status="{{ key }}"></div>
+    </div>
+    {% endfor %}
+  </div>
+</main>
+
+<section id="detail" class="hidden">
+  <button id="close-detail">✕</button>
+  <h2 id="d-name"></h2>
+  <div id="d-meta"></div>
+
+  <div class="actions">
+    <a id="d-call" class="btn primary">📞 התקשר</a>
+    <button id="d-wa" class="btn whatsapp">💬 WhatsApp</button>
+    <a id="d-maps" class="btn" target="_blank">🗺 מפות</a>
+  </div>
+
+  <div class="row">
+    <label>סטטוס
+      <select id="d-status">
+        {% for key, label in statuses %}
+        <option value="{{ key }}">{{ label }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>אחראי
+      <select id="d-owner"></select>
+    </label>
+  </div>
+
+  <label>תאריך מעקב הבא <input type="date" id="d-followup"></label>
+  <label>קישור דמו <input type="url" id="d-demo" placeholder="https://..."></label>
+  <label>קישור אתר סופי <input type="url" id="d-final" placeholder="https://..."></label>
+  <div class="row">
+    <label>מחיר כולל <input type="number" id="d-total" step="50"></label>
+    <label>שולם <input type="number" id="d-paid" step="50"></label>
+  </div>
+  <label>הערות <textarea id="d-notes" rows="6" placeholder="תיעוד שיחות, מה הוסכם, לידים פנימיים..."></textarea></label>
+
+  <div class="actions">
+    <span id="d-saved" class="saved">שינויים נשמרים אוטומטית</span>
+  </div>
+
+  <p class="meta" id="d-times"></p>
+
+  <h3 class="events-title">היסטוריית פעולות</h3>
+  <ul id="d-events" class="events"></ul>
+</section>
+
+<div id="new-modal" class="modal hidden">
+  <div class="modal-content">
+    <h3>ליד חדש</h3>
+    <p class="hint">כל השדות אופציונליים</p>
+    <label>שם <input id="nl-name" type="text"></label>
+    <label>קטגוריה <input id="nl-category" type="text"></label>
+    <label>עיר <input id="nl-city" type="text"></label>
+    <label>טלפון <input id="nl-phone" type="tel" placeholder="054-123-4567"></label>
+    <label>כתובת <input id="nl-address" type="text"></label>
+    <label>אחראי <select id="nl-owner"></select></label>
+    <label>הערות <textarea id="nl-notes" rows="3"></textarea></label>
+    <div class="actions">
+      <button id="nl-save" class="btn primary">צור ליד</button>
+      <button id="nl-cancel" class="btn">ביטול</button>
+    </div>
+  </div>
+</div>
+
+<div id="wa-modal" class="modal hidden">
+  <div class="modal-content">
+    <h3>שלח WhatsApp</h3>
+    <label>תבנית הודעה
+      <select id="wa-stage">
+        {% for key, label in statuses %}
+        <option value="{{ key }}">{{ label }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <textarea id="wa-text" rows="8"></textarea>
+    <div class="actions">
+      <button id="wa-send" class="btn whatsapp">פתח WhatsApp</button>
+      <button id="wa-cancel" class="btn">ביטול</button>
+    </div>
+  </div>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
