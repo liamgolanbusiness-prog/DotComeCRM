@@ -142,6 +142,15 @@ def ensure_schema():
     con.execute("CREATE INDEX IF NOT EXISTS idx_events_lead ON lead_events(lead_id)")
     con.execute("CREATE INDEX IF NOT EXISTS idx_events_user ON lead_events(user)")
 
+    # Reassign any lead whose owner is no longer a known user (e.g. legacy
+    # 'rom' on the Railway volume) to 'ely'. Idempotent: once moved, the
+    # owner is in USERS and the WHERE clause excludes it.
+    placeholders = ",".join("?" * len(USER_KEYS))
+    con.execute(
+        f"UPDATE leads SET owner='ely' WHERE owner IS NOT NULL AND owner NOT IN ({placeholders})",
+        USER_KEYS,
+    )
+
     unassigned = [r["id"] for r in con.execute("SELECT id FROM leads WHERE owner IS NULL").fetchall()]
     if unassigned:
         rng = random.Random(0xD07C0FFEE)
