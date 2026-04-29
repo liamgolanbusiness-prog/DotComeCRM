@@ -77,7 +77,7 @@ After saving variables, Railway redeploys automatically.
 
 ## 5. Generate a public URL
 
-Service → **Settings → Networking → Generate Domain**. You'll get `https://your-project.up.railway.app`. Open it, log in as `liam` / `bar` / `rom`, and you should see your 6,081 leads with the owner badges.
+Service → **Settings → Networking → Generate Domain**. You'll get `https://your-project.up.railway.app`. Open it, log in as `liam` / `bar` / `ely`, and you should see your 6,081 leads with the owner badges.
 
 ---
 

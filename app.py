@@ -11,7 +11,7 @@ SECURE_COOKIE = os.environ.get("CRM_SECURE_COOKIES", "0") == "1"
 USERS = {
     "liam": "Liami123!",
     "bar":  "Avnon123",
-    "rom":  "Romchuk123!",
+    "ely":  "Ely123!",
 }
 
 # First-boot seeding: when CRM_DB_PATH points at a mounted volume that's empty
