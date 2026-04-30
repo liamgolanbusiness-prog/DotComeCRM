@@ -12,6 +12,7 @@ USERS = {
     "liam": "Liami123!",
     "bar":  "Avnon123",
     "ely":  "Ely123!",
+    "rom":  "Romchuk123!",
 }
 
 # First-boot seeding: when CRM_DB_PATH points at a mounted volume that's empty
@@ -150,6 +151,22 @@ def ensure_schema():
         f"UPDATE leads SET owner='ely' WHERE owner IS NOT NULL AND owner NOT IN ({placeholders})",
         USER_KEYS,
     )
+
+    # Onboard 'rom' with a starting book of 500 leads from each other user.
+    # Runs only when rom owns nothing, so subsequent boots are no-ops and
+    # manual reassignments aren't undone.
+    if "rom" in USERS:
+        rom_count = con.execute("SELECT COUNT(*) FROM leads WHERE owner='rom'").fetchone()[0]
+        if rom_count == 0:
+            rng = random.Random(0xC0FFEE5EED)
+            for u in ("liam", "bar", "ely"):
+                ids = [r["id"] for r in con.execute(
+                    "SELECT id FROM leads WHERE owner=? ORDER BY id", (u,)).fetchall()]
+                rng.shuffle(ids)
+                for lid in ids[:500]:
+                    con.execute("UPDATE leads SET owner='rom' WHERE id=?", (lid,))
+                    log_event(con, lid, "owner_change",
+                              {"from": u, "to": "rom"}, user="system")
 
     unassigned = [r["id"] for r in con.execute("SELECT id FROM leads WHERE owner IS NULL").fetchall()]
     if unassigned:

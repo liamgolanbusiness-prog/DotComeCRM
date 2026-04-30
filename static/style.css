@@ -55,6 +55,7 @@ header button { padding:6px 12px; border:1px solid #cbd5e1; background:#fff; bor
 .owner-badge.owner-liam { background:#dbeafe; color:#1d4ed8; }
 .owner-badge.owner-bar  { background:#fee2e2; color:#b91c1c; }
 .owner-badge.owner-ely  { background:#dcfce7; color:#166534; }
+.owner-badge.owner-rom  { background:#ede9fe; color:#6d28d9; }
 .owner-badge.owner-mine { box-shadow:inset 0 0 0 2px rgba(0,0,0,.12); }
 .kcard .owner-badge { display:inline-block; margin-top:4px; font-size:10px; padding:1px 6px; }
 
