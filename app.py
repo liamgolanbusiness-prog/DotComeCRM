@@ -9,10 +9,11 @@ SECRET_KEY    = os.environ.get("CRM_SECRET_KEY") or secrets.token_hex(32)
 SECURE_COOKIE = os.environ.get("CRM_SECURE_COOKIES", "0") == "1"
 
 USERS = {
-    "liam": "Liami123!",
-    "bar":  "Avnon123",
-    "ely":  "Ely123!",
-    "rom":  "Romchuk123!",
+    "liam":  "Liami123!",
+    "bar":   "Avnon123",
+    "ely":   "Ely123!",
+    "rom":   "Romchuk123!",
+    "nadav": "Nadav123!",
 }
 
 # First-boot seeding: when CRM_DB_PATH points at a mounted volume that's empty
@@ -167,6 +168,20 @@ def ensure_schema():
                     con.execute("UPDATE leads SET owner='rom' WHERE id=?", (lid,))
                     log_event(con, lid, "owner_change",
                               {"from": u, "to": "rom"}, user="system")
+
+    # Onboard 'nadav' with a starting book of 200 leads from each other user.
+    if "nadav" in USERS:
+        nadav_count = con.execute("SELECT COUNT(*) FROM leads WHERE owner='nadav'").fetchone()[0]
+        if nadav_count == 0:
+            rng = random.Random(0x4ADAF12345)
+            for u in ("liam", "bar", "ely", "rom"):
+                ids = [r["id"] for r in con.execute(
+                    "SELECT id FROM leads WHERE owner=? ORDER BY id", (u,)).fetchall()]
+                rng.shuffle(ids)
+                for lid in ids[:200]:
+                    con.execute("UPDATE leads SET owner='nadav' WHERE id=?", (lid,))
+                    log_event(con, lid, "owner_change",
+                              {"from": u, "to": "nadav"}, user="system")
 
     unassigned = [r["id"] for r in con.execute("SELECT id FROM leads WHERE owner IS NULL").fetchall()]
     if unassigned:
